@@ -1,0 +1,117 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    Listing
+{% endblock %}
+
+{% block body %}
+    {% if message %}
+    <div class="alert alert-danger" role="alert">{{ message }}</div>
+    {% endif %}
+
+    <a href="{% url 'index' %}">Back to Listing List</a>
+
+    {% if user.is_authenticated %}
+        <!--Watchlist button-->
+            {% if UserInWatchlist %}
+                <form action="{% url 'removeWatchlist' listing.id %}" method="POST">
+                    {% csrf_token %}
+                    <br>
+                    <button class="btn btn-secondary btn-sm" type="submit">Remove Watchlist</button>
+                </form>
+            {% else %}
+                <form action="{% url 'addWatchlist' listing.id %}" method="POST">
+                    {% csrf_token %}
+                    <br>
+                    <button class="btn btn-secondary btn-sm" type="submit">Add Watchlist</button>
+                </form>
+            {% endif %}
+
+        <!--Close button for the creator of the listing-->
+        {% if user == listing.creator_id and listing.current_state == True %}
+            <a class="btn btn-outline-danger btn-sm" href="{% url 'closeListing' listing.id %}" role="button">Close Listing</a>
+        {% endif %}
+    {% endif %}    
+
+    <!--Listing details-->
+    <div class="container-description">
+        <div class="image-descriptin">
+            {% if listing.URL_image %}
+            <img src="{{listing.URL_image}}" width="400px">
+            {% else %}
+            <img style="width:100%"  src="https://consultix.radiantthemes.com/demo-ten/wp-content/themes/consultix/images/no-image-found-360x250.png" alt="...">
+            {% endif %}
+        </div>
+        <div class="content-description">
+            <h3>Listing: {{ listing.title }}</h3>
+            <h4>Description</h4>
+            <p>{{ listing.description}}</p>
+            {% if listing.current_price %}
+                <h4>Price: ${{ listing.current_price }}</h4>
+            {% else %}
+                <h4>Price: ${{ listing.starting_price }}</h4>
+            {% endif %}
+
+            {% if user.is_authenticated and listing.current_state == True %}
+                <!--Place bid-->
+                <h6>Place bid</h6>
+                <form action="{% url 'placeBid' listing.id %}" method="POST">
+                    {% csrf_token %}
+                    {% if bids.user_id == user %}
+                    <label><small>{{ allBids|length}} bid(s) so far. Your bid is the current bid.</small></label>
+                    {% else %}
+                    <label><small>{{ allBids|length}} bid(s) so far.</small></label>
+                    {% endif %}
+                    {{ formBid }}
+                    <br>
+                    <button class="btn btn-primary" hidden type="submit">Place Bid</button>
+                </form>
+            {% endif %}
+
+            <h4>Details</h4>
+            <ul>
+                <li>Listed by {{listing.creator_id}}</li>
+                <li>Category: {{listing.category}}</li>
+                <li>Created at: <small class="text-muted">{{ listing.time }}</small></li>
+            </ul>
+        </div>
+    </div>
+
+    <!--Message if the listing are closed-->
+    {% if user.is_authenticated %}
+        {% if listing.current_state == False and user == bids.user_id %}
+            <div class="alert alert-success" role="alert">
+                Congratulation! You are the winner! {{bids.user_id}}
+            </div>
+        {% elif listing.current_state == False %}
+            <div class="alert alert-danger" role="alert">
+                The listing is closed!
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <!--List of comments-->
+    <div class="card">
+        <h5 class="card-header">Comments</h5>
+        <div class="card-body">
+            <!--Add a comment-->
+            {% if user.is_authenticated %}
+            <form action="{% url 'addComment' listing.id %}" method="POST">
+                {% csrf_token %}
+                {{ formComment }}
+                <br>
+                <button class="btn btn-primary" hidden type="submit">Post</button>
+            </form>
+            {% endif %}
+            <ul class="no-bullets">
+                {% for comment in comments %}
+                <li class="comment-container">
+                    <h5 class="card-title">{{ comment.user_id }} <small class="text-muted">{{comment.time }}</small></h5>
+                    <p class="card-text">Comment: {{ comment.comments }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+      </div>
+
+{% endblock %}

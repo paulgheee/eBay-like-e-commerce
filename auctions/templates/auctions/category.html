@@ -1,0 +1,59 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    Categoty
+{% endblock %}
+
+{% block body %}
+    {% if message %}
+    <div>{{ message }}</div>
+    {% endif %}
+
+    <h2>Category</h2>
+    
+    <form action="{% url 'category' %}" method="POST">
+        <div class="mb-3">
+            {% csrf_token %}
+            {{ form }}
+            <br>
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+
+    <ul class="no-bullets">
+        <div class="row justify-content-center">
+        {% for auction in auctions %}
+            {% if auction.current_state == True %}
+                <div class="col">
+                    <li>
+                        <div class="card shadow p-3 mb-5 bg-body rounded" style="width: 20rem;">
+                            {% if auction.URL_image %}
+                            <a href="{% url 'listing' auction.id %}" class="">
+                                <img src="{{auction.URL_image}}" class="card-img-top" alt="...">
+                            </a>
+                            {% else %}
+                            <a href="{% url 'listing' auction.id %}" class="">
+                                <img src="https://consultix.radiantthemes.com/demo-ten/wp-content/themes/consultix/images/no-image-found-360x250.png" class="card-img-top" alt="...">
+                            </a>
+                            {% endif %}
+                            <div class="card-body">
+                                <a href="{% url 'listing' auction.id %}" class="">
+                                    <h5 class="card-title">{{ auction.title }}</h5>
+                                </a>
+                                <p class="card-text">{{ auction.description}}</p>
+                                {% if auction.current_price %}
+                                <p>{{ auction.current_price }}$</p>
+                                {% else %}
+                                <p>{{ auction.starting_price }}$</p>
+                                {% endif %}
+                                <p>Created on: <small class="text-muted">{{ auction.time }}</small></p>
+                            </div>
+                        </div>
+                    </li>
+                </div>
+            {% endif %}
+        {% endfor %}
+        </div>
+    </ul>
+    
+{% endblock %}

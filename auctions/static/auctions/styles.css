@@ -1,0 +1,48 @@
+body {
+    padding: 10px;
+}
+
+.logincontainer{
+    margin: 100px;
+    padding: 50px;
+}
+
+ul.no-bullets {
+    list-style-type: none; /* Remove bullets */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margins */
+  }
+
+.card-title {
+    font-size: 16px!important;
+    line-height: 24px!important;
+    font-weight: 400!important;
+    font-style: normal!important;
+    text-transform: none!important;
+    text-decoration: none!important;
+}
+
+/* Fit photo in the card */
+.card-img-top {
+    width: 100%;
+    height: 20vh;
+    object-fit: contain;
+}
+
+/* Background of the comments */
+.comment-container{
+    background: #f1f1f1;
+    margin-bottom: 20px;
+}
+
+/* Container photo and description */
+.container-description{
+    display: block;
+    display: flex;
+    flex-wrap: wrap;
+}
+.content-description{
+    flex-grow: 1;
+    margin-left: 20px;
+}
+
